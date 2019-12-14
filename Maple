@@ -1,0 +1,902 @@
+restart;Digits:=12:
+with(plots):
+with(plottools):
+with(CurveFitting):
+with(ExcelTools):
+with(linalg):
+with(ColorTools):
+A := Import("D:\\60 Êîìàðîâà ÇÈ ñòèìóëÿòîð.xlsx");
+
+N1:=rowdim(convert(A,array));
+N2:=coldim(convert(A,array));
+                                             AAssignMatrix(%id = 18446745285417845038)
+                                                        N1 := 100304
+                                                          N2 := 1
+N:=N1-1; N_nach:=0; N_konech:=N;
+
+T_promegutki_sna:=[
+[12.5*3600,12.5*3600+8*3600]
+];
+
+#N_nach:=0; N:=1000; N_konech:=N_nach+N;
+                                                                              N := 100303
+                                                                             N_nach := 0
+                                                                           N_konech := 100303
+                                                                  T_promegutki_sna := [[45000.0, 73800.0]]
+if N2=1 then
+
+i:='i':
+t[0]:=0:
+for i from 1 to N_nach+1 do
+t[0]:=t[0]+A[i,1]/1000:
+end do:
+i:='i':
+i:='i':
+y[0]:=60/(A[N_nach+1,1]/1000):
+for i from N_nach+1 to N_konech do
+t[i-N_nach]:=t[i-N_nach-1]+A[i+1,1]/1000:
+y[i-N_nach]:=60/(A[i+1,1]/1000):
+end do:
+i:='i':
+
+else
+
+i:='i':
+for i from N_nach to N_konech do
+t[i-N_nach]:=A[i+1,1]:
+y[i-N_nach]:=A[i+1,2]:
+end do:
+i:='i':
+
+end if:
+
+i:='i':
+j:='j':
+while max(seq(abs((y[i+1]-y[i])/(t[i+1]-t[i])),i=0..N-1))>=100 do
+i:='i':
+j:=0:
+for i from 0 to N-1 do
+  if (abs(y[i])<200) and (abs((y[i+1]-y[i])/(t[i+1]-t[i]))<100) then
+    t[j]:=t[i]:
+    y[j]:=y[i]:
+    j:=j+1:
+  end if:
+end do:
+N:=j-1;
+i:='i':
+j:='j':
+end do:
+N:=N;
+i:='i':
+j:='j':
+
+i:='i':
+yt:=[seq([t[i],y[i]],i=0..N)]:
+i:='i':
+
+t[0]:=t[0];
+t[N]:=t[N];
+
+i:='i':
+j:='j':
+ii:=0:
+for j from 1 to nops(T_promegutki_sna) do
+for i from 0 to N do
+ if t[i]>=T_promegutki_sna[j][1] and t[i]<=T_promegutki_sna[j][2] then
+  ii:=ii+1:
+  T_sna[ii]:=t[i]:
+ end if:
+end do:
+end do:
+ii:='ii':
+i:='i':
+j:='j':
+T_sna:=convert(T_sna,list):
+                                                                                      N := 100203
+                                                                                 t[0] := 0.668000000000
+                                                                               t[100203] := 80300.7400000
+#i:='i':
+#for i from 1 to N do
+#dif_y_t[i]:=(y[i]-y[i-1])/(t[i]-t[i-1]):
+#end do:
+#i:='i':
+
+#i:='i':
+#dif_y_tt:=[seq([t[i],abs(dif_y_t[i])],i=1..N)]:
+#i:='i':
+
+#ppp1:=plot(dif_y_tt,color=red,style=point,symbol=point):
+#ppp11:=plot(dif_y_tt,color=red):
+#display({ppp1,ppp11});
+#ppp1:=plot(yt,color=red,style=point,symbol=point):
+#ppp11:=plot(yt,color=red):
+#display({ppp1,ppp11});
+i:='i':
+for i from 0 to N do
+yy[i]:=y[i]:
+end do:
+i:='i':
+
+NNN_faz:=proc(B,NN,truefalse) local i, ii, y, v, ppp, lambda, s, j, n, ppp_unique, rvn; global t, yy, N;
+
+NumericEventHandler(invalid_operation = `Heaviside/EventHandler`(value_at_zero = 0)):
+
+#NN:=N;
+
+#+++++++++++++++++++++++++++++++++++++++
+
+if truefalse<>true and truefalse<>false then
+
+ ii:=0:
+ i:='i': s:='s':
+ for i from 0 to NN-2 do
+
+  y[i]:=round(B*yy[i]): y[i+1]:=round(B*yy[i+1]):
+  v[i]:=round(B*(yy[i+1]-yy[i])/(t[i+1]-t[i])): v[i+1]:=round(B*(yy[i+2]-yy[i+1])/(t[i+2]-t[i+1])):
+
+  lambda[i]:=max(abs(y[i+1]-y[i]),abs(v[i+1]-v[i])):
+  if lambda[i]<>0 then
+
+  for s from 0 to lambda[i]-1 do
+
+  if abs(y[i+1]-y[i])>abs(v[i+1]-v[i]) then
+  ii:=ii+1:
+  ppp[ii]:=[y[i]+sign(y[i+1]-y[i])*s-Heaviside(y[i]-y[i+1]),v[i]+trunc((v[i+1]-v[i])*s/lambda[i])-Heaviside(v[i]-v[i+1])]:
+  end if:
+
+  if abs(y[i+1]-y[i])<=abs(v[i+1]-v[i]) then
+  ii:=ii+1:
+  ppp[ii]:=[y[i]+trunc((y[i+1]-y[i])*s/lambda[i])-Heaviside(y[i]-y[i+1]),v[i]+sign(v[i+1]-v[i])*s-Heaviside(v[i]-v[i+1])]:
+  end if:
+
+  end do;
+
+  else
+
+  ii:=ii+1:
+  ppp[ii]:=[y[i],v[i]]:
+
+  end if:
+  y:='y': v:='v': lambda:='lambda':
+
+ end do;
+ i:='i': s:='s':
+
+else
+
+#+++++++++++++++++++++++++++++++++++++++
+
+ ii:=0:
+ i:='i': s:='s':
+ for i from 0 to NN-2 do
+
+ if has(T_sna,t[i])=truefalse then
+
+  y[i]:=round(B*yy[i]): y[i+1]:=round(B*yy[i+1]):
+  v[i]:=round(B*(yy[i+1]-yy[i])/(t[i+1]-t[i])): v[i+1]:=round(B*(yy[i+2]-yy[i+1])/(t[i+2]-t[i+1])):
+
+  lambda[i]:=max(abs(y[i+1]-y[i]),abs(v[i+1]-v[i])):
+  if lambda[i]<>0 then
+
+  for s from 0 to lambda[i]-1 do
+
+  if abs(y[i+1]-y[i])>abs(v[i+1]-v[i]) then
+  ii:=ii+1:
+  ppp[ii]:=[y[i]+sign(y[i+1]-y[i])*s-Heaviside(y[i]-y[i+1]),v[i]+trunc((v[i+1]-v[i])*s/lambda[i])-Heaviside(v[i]-v[i+1])]:
+  end if:
+
+  if abs(y[i+1]-y[i])<=abs(v[i+1]-v[i]) then
+  ii:=ii+1:
+  ppp[ii]:=[y[i]+trunc((y[i+1]-y[i])*s/lambda[i])-Heaviside(y[i]-y[i+1]),v[i]+sign(v[i+1]-v[i])*s-Heaviside(v[i]-v[i+1])]:
+  end if:
+
+  end do;
+
+  else
+
+  ii:=ii+1:
+  ppp[ii]:=[y[i],v[i]]:
+
+  end if:
+  y:='y': v:='v': lambda:='lambda':
+
+ end if:
+
+ end do;
+ i:='i': s:='s':
+
+end if:
+
+#+++++++++++++++++++++++++++++++++++++++
+
+ppp:=convert(ppp,list):
+ppp_unique:=convert(convert(ppp,set),list):
+
+i:='i':
+j:='j':
+n:='n':
+rvn:=[]:
+for i from 1 to nops(ppp_unique) do
+ n[i]:=numboccur(ppp,[ppp_unique[i]]):
+ rvn:=[op(rvn),[ppp_unique[i][1]/B,ppp_unique[i][2]/B,n[i]]]:
+end do:
+i:='i':
+j:='j':
+n:='n':
+
+rvn;
+
+end proc:
+#NNN_faz(1,10,0);
+
+                                        МАЕМСЯ С ЦВЕТАМИ
+
+Color:=[gray,
+"SteelBlue","Coral","Niagara DarkOrchid",green,blue,red]:
+
+N_color:=nops(_Color);
+
+Pokazatel_razbieniy:=1.6;
+                                                                  N_color := 7
+                                                          Pokazatel_razbieniy := 1.6
+                                                    Prostranstvo_sostoyaniy:=proc(h) local N, Gamma, i, j, k, r_max, v_max, 
+                                                    n_max, r, v, n, rv_color, spisok_color, intervaly_n, ppp, ppp21, ppp22, ppp3; 
+                                                            global rvn, N_color, Pokazatel_razbieniy, _Color;
+
+N:=nops(rvn);
+print(Gamma[1]=N);
+
+i:='i': j:='j':
+for i from 1 to N do
+ if has(rvn[i][3],max(seq(rvn[j][3],j=1..N))) then
+  #print(i,r=rvn[i][1],v=rvn[i][2],n[max]=rvn[i][3]);
+  r_max:=rvn[i][1]:
+  v_max:=rvn[i][2]:
+  n_max:=rvn[i][3]:
+  break;
+ end if;
+end do:
+i:='i': j:='j':
+
+i:='i': j:='j': k:='k':
+for i from 1 to N_color do
+ k:=0:
+ for j from 1 to N do
+   if rvn[j][3]>round((i-1)^Pokazatel_razbieniy*n_max/N_color^Pokazatel_razbieniy) and 
+      rvn[j][3]<=round(i^Pokazatel_razbieniy*n_max/N_color^Pokazatel_razbieniy) then
+    k:=k+1:
+    if abs(rvn[j][2])=15 then
+     rv_color[i][k]:=cuboid([rvn[j][1]-0.75*h,rvn[j][2]-0.75*h,0],[rvn[j][1]+0.75*h,rvn[j][2]+0.75*h,rvn[j][3]],color=black):
+     else
+     rv_color[i][k]:=cuboid([rvn[j][1]-0.5*h,rvn[j][2]-0.5*h,0],[rvn[j][1]+0.5*h,rvn[j][2]+0.5*h,rvn[j][3]],color=_Color[i]):
+    end if:
+   end if:
+ end do:
+ if k<>0 then
+  rv_color[i]:=convert(convert(rv_color[i],set),list):
+  spisok_color[i]:=i:
+ end if:
+end do:
+spisok_color:=convert(spisok_color,list);
+i:='i': j:='j': k:='k':
+
+#i:='i':
+#j:='j':
+#for i from 1 to nops(spisok_color) do
+#j:=spisok_color[i]:
+#intervaly_n[i]:=[1+round((j-1)^Pokazatel_razbieniy*n_max/N_color^Pokazatel_razbieniy),round(j^Pokazatel_razbieniy*n_max/N_color^Pokazatel_razbieniy)];
+#end do:
+#i:='i':
+#j:='j':
+
+#i:='i':
+#for i from 1 to nops(spisok_color) do
+#ppp[i]:=pointplot3d(rv_color[spisok_color[i]],style=line,color=_Color[spisok_color[i]]):
+#end do:
+#i:='i':
+
+ppp21:=cuboid([min(seq(rvn[i][1],i=1..N))-0.75*h,15-0.75*h,0],[max(seq(rvn[i][1],i=1..N))+0.75*h,15+0.75*h,0],
+color=black):
+ppp22:=cuboid([min(seq(rvn[i][1],i=1..N))-0.75*h,-15-0.75*h,0],[max(seq(rvn[i][1],i=1..N))+0.75*h,-15+0.75*h,0],
+color=black):
+
+#ppp3:=plot(<<r_max>|<v_max>>,
+#style=point,symbol=diagonalcross,symbolsize=6,color=yellow,
+#legend=[[r[m]=r_max,v[m]=v_max,n[m]=n_max]],legendstyle=[font=[Times,Roman,10],location=right]):
+
+i:='i':
+display(ppp21,ppp22,seq(op(rv_color[spisok_color[i]]),i=1..nops(spisok_color)),orientation=[-33,52,9],axes=frame,style=surface,
+axesfont=[TIMES,Roman,40],labels=["y","v","n"],labelfont=[TIMES,italic,60]);
+
+end proc:
+
+
+                                      Задаём щаг квантования h
+                                      
+hh:='hh':
+
+i:='i':
+for i from 0 to 5 do
+hh[i]:=1-0.1*i:
+end do:
+i:='i':
+
+hh:=convert(hh,list);
+
+#hh:='hh': hh:=[1];
+
+NN_hh:=nops(hh);
+                                        hh := [1., 0.9, 0.8, 0.7, 0.6, 0.5]
+                                                   NN_hh := 6
+                                                   
+                                        Фрактальность КФП МСР (общий случай)
+
+NN2D:='NN2D':
+NN3D:='NN3D':
+
+i:='i':
+for i from 1 to NN_hh do
+
+rvn_full[i]:=NNN_faz(1/hh[i],N,0):
+
+NN_rvn_full[i]:=nops(rvn_full[i]):
+
+ii:='ii':
+NN2D[i]:=sum(1,ii=1..NN_rvn_full[i]):
+ii:='ii':
+print(i,NN2D[i]);
+
+NN3D[i]:=0:
+ii:='ii':
+for ii from 1 to NN_rvn_full[i] do
+if rvn_full[i][ii][3]/hh[i]-trunc(rvn_full[i][ii][3]/hh[i])=0 then
+NN3D[i]:=NN3D[i]+rvn_full[i][ii][3]/hh[i]:
+else
+NN3D[i]:=NN3D[i]+trunc(rvn_full[i][ii][3]/hh[i])+1:
+end if:
+end do:
+ii:='ii':
+print(i,NN3D[i]);
+
+end do:
+i:='i':
+
+NN2D_full:=convert(NN2D,list);
+NN3D_full:=convert(NN3D,list);
+
+NN2D:='NN2D':
+NN3D:='NN3D':
+                            1, 9318
+                                         5
+                      1, 3.96502000000 10 
+                            2, 11310
+                                         5
+                      2, 4.91314000000 10 
+                            3, 14079
+                                         5
+                      3, 6.15211000000 10 
+                            4, 17768
+                                         5
+                      4, 7.97337000000 10 
+                            5, 23535
+                                         6
+                      5, 1.07529900000 10 
+                            6, 32545
+                                         6
+                      6, 1.53400800000 10 
+     NN2D_full := [9318, 11310, 14079, 17768, 23535, 32545]
+               [                5                  5  
+  NN3D_full := [3.96502000000 10 , 4.91314000000 10 , 
+
+                    5                  5                  6  
+    6.15211000000 10 , 7.97337000000 10 , 1.07529900000 10 , 
+
+                    6]
+    1.53400800000 10 ]
+NN:='NN':
+NN:=NN2D_full:
+
+DD:='DD':
+Gamma:='Gamma':
+i:='i':
+Lambda:=sum((NN[i]-Gamma*(hh[i])^(-DD))^2,i=1..NN_hh):
+i:='i':
+Resh:=fsolve({diff(Lambda,DD)=0,diff(Lambda,Gamma)=0},{DD=0..2,Gamma=1..max(NN)});
+i:='i':
+for i from 1 to nops(Resh) do
+if lhs(Resh[i])=DD then DD:=rhs(Resh[i]): end if:
+if lhs(Resh[i])=Gamma then Gamma:=rhs(Resh[i]): end if:
+end do;
+i:='i':
+DD:=DD;
+Gamma:=Gamma;
+
+i:='i':
+ppp1:=pointplot([seq([hh[i],NN[i]],i=1..NN_hh)]):
+i:='i':
+ppp2:=plot(Gamma*h^(-DD),h=hh[1]..hh[NN_hh]):
+display(ppp1,ppp2);
+
+i:='i':
+_delta:=max(seq(abs(NN[i]-subs(h=hh[i],Gamma*h^(-DD)))/abs(Gamma*(hh[i])^(-DD)),i=1..NN_hh));
+i:='i':
+
+NN:='NN':
+
+print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+NN:='NN':
+NN:=NN3D_full:
+
+DD:='DD':
+Gamma:='Gamma':
+i:='i':
+Lambda:=sum((NN[i]-Gamma*(hh[i])^(-DD))^2,i=1..NN_hh):
+i:='i':
+Resh:=fsolve({diff(Lambda,DD)=0,diff(Lambda,Gamma)=0},{DD=0..3,Gamma=1..max(NN)});
+i:='i':
+for i from 1 to nops(Resh) do
+if lhs(Resh[i])=DD then DD:=rhs(Resh[i]): end if:
+if lhs(Resh[i])=Gamma then Gamma:=rhs(Resh[i]): end if:
+end do;
+i:='i':
+DD:=DD;
+Gamma:=Gamma;
+
+i:='i':
+ppp1:=pointplot([seq([hh[i],NN[i]],i=1..NN_hh)]):
+i:='i':
+ppp2:=plot(Gamma*h^(-DD),h=hh[1]..hh[NN_hh]):
+display(ppp1,ppp2);
+
+i:='i':
+_delta:=max(seq(abs(NN[i]-subs(h=hh[i],Gamma*h^(-DD)))/abs(Gamma*(hh[i])^(-DD)),i=1..NN_hh));
+i:='i':
+
+NN:='NN':
+      Resh := {DD = 1.79627141597, Gamma = 9379.09968387}
+                      DD := 1.79627141597
+                     Gamma := 9379.09968387
+
+                   _delta := 0.00651445084597
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+  ++++++"
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+  ++++++"
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+  ++++++"
+            /                                            5\ 
+   Resh := { DD = 1.94438018709, Gamma = 3.98518541373 10  }
+            \                                             / 
+                      DD := 1.94438018709
+                                            5
+                   Gamma := 3.98518541373 10 
+
+                   _delta := 0.00506009423314
+
+
+                                          Фрактальность КФП МСР (сон)
+                                          
+NN2D:='NN2D':
+NN3D:='NN3D':
+
+i:='i':
+for i from 1 to NN_hh do
+
+rvn_son[i]:=NNN_faz(1/hh[i],N,true):
+
+NN_rvn_son[i]:=nops(rvn_son[i]):
+
+ii:='ii':
+NN2D[i]:=sum(1,ii=1..NN_rvn_son[i]):
+ii:='ii':
+print(i,NN2D[i]);
+
+NN3D[i]:=0:
+ii:='ii':
+for ii from 1 to NN_rvn_son[i] do
+if rvn_son[i][ii][3]/hh[i]-trunc(rvn_son[i][ii][3]/hh[i])=0 then
+NN3D[i]:=NN3D[i]+rvn_son[i][ii][3]/hh[i]:
+else
+NN3D[i]:=NN3D[i]+trunc(rvn_son[i][ii][3]/hh[i])+1:
+end if:
+end do:
+ii:='ii':
+print(i,NN3D[i]);
+
+end do:
+i:='i':
+
+NN2D_son:=convert(NN2D,list);
+NN3D_son:=convert(NN3D,list);
+
+NN2D:='NN2D':
+NN3D:='NN3D':
+                            1, 5234
+                        1, 85082.0000000
+                            2, 6303
+                                         5
+                      2, 1.07075000000 10 
+                            3, 7693
+                                         5
+                      3, 1.31964000000 10 
+                            4, 9612
+                                         5
+                      4, 1.69400000000 10 
+                            5, 12490
+                                         5
+                      5, 2.27522000000 10 
+                            6, 16866
+                                         5
+                      6, 3.20164000000 10 
+       NN2D_son := [5234, 6303, 7693, 9612, 12490, 16866]
+            [                               5                  5  
+NN3D_son := [85082.0000000, 1.07075000000 10 , 1.31964000000 10 , 
+
+                  5                  5                  5]
+  1.69400000000 10 , 2.27522000000 10 , 3.20164000000 10 ]
+NN:='NN':
+NN:=NN2D_son:
+
+DD:='DD':
+Gamma:='Gamma':
+i:='i':
+Lambda:=sum((NN[i]-Gamma*(hh[i])^(-DD))^2,i=1..NN_hh):
+i:='i':
+Resh:=fsolve({diff(Lambda,DD)=0,diff(Lambda,Gamma)=0},{DD=0..2,Gamma=1..max(NN)});
+i:='i':
+for i from 1 to nops(Resh) do
+if lhs(Resh[i])=DD then DD:=rhs(Resh[i]): end if:
+if lhs(Resh[i])=Gamma then Gamma:=rhs(Resh[i]): end if:
+end do;
+i:='i':
+DD:=DD;
+Gamma:=Gamma;
+
+i:='i':
+ppp1:=pointplot([seq([hh[i],NN[i]],i=1..NN_hh)]):
+i:='i':
+ppp2:=plot(Gamma*h^(-DD),h=hh[1]..hh[NN_hh]):
+display(ppp1,ppp2);
+
+i:='i':
+_delta:=max(seq(abs(NN[i]-subs(h=hh[i],Gamma*h^(-DD)))/abs(Gamma*(hh[i])^(-DD)),i=1..NN_hh));
+i:='i':
+
+NN:='NN':
+
+print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+NN:='NN':
+NN:=NN3D_son:
+
+DD:='DD':
+Gamma:='Gamma':
+i:='i':
+Lambda:=sum((NN[i]-Gamma*(hh[i])^(-DD))^2,i=1..NN_hh):
+i:='i':
+Resh:=fsolve({diff(Lambda,DD)=0,diff(Lambda,Gamma)=0},{DD=0..3,Gamma=1..max(NN)});
+i:='i':
+for i from 1 to nops(Resh) do
+if lhs(Resh[i])=DD then DD:=rhs(Resh[i]): end if:
+if lhs(Resh[i])=Gamma then Gamma:=rhs(Resh[i]): end if:
+end do;
+i:='i':
+DD:=DD;
+Gamma:=Gamma;
+
+i:='i':
+ppp1:=pointplot([seq([hh[i],NN[i]],i=1..NN_hh)]):
+i:='i':
+ppp2:=plot(Gamma*h^(-DD),h=hh[1]..hh[NN_hh]):
+display(ppp1,ppp2);
+
+i:='i':
+_delta:=max(seq(abs(NN[i]-subs(h=hh[i],Gamma*h^(-DD)))/abs(Gamma*(hh[i])^(-DD)),i=1..NN_hh));
+i:='i':
+
+NN:='NN':
+
+NN2D:='NN2D':
+NN3D:='NN3D':
+      Resh := {DD = 1.67762047112, Gamma = 5281.32201073}
+                      DD := 1.67762047112
+                     Gamma := 5281.32201073
+
+                   _delta := 0.00896025855531
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+  ++++++"
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+  ++++++"
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+  ++++++"
+      Resh := {DD = 1.88767057510, Gamma = 86578.6531646}
+                      DD := 1.88767057510
+                     Gamma := 86578.6531646
+
+                   _delta := 0.0172866302477
+
+                                                Фрактальность КФП МСР (бодрствование) 
+                                          
+NN2D:='NN2D':
+NN3D:='NN3D':
+
+i:='i':
+for i from 1 to NN_hh do
+
+rvn_bodrstvovanie[i]:=NNN_faz(1/hh[i],N,false):
+
+NN_rvn_bodrstvovanie[i]:=nops(rvn_bodrstvovanie[i]):
+
+ii:='ii':
+NN2D[i]:=sum(1,ii=1..NN_rvn_bodrstvovanie[i]):
+ii:='ii':
+print(i,NN2D[i]);
+
+NN3D[i]:=0:
+ii:='ii':
+for ii from 1 to NN_rvn_bodrstvovanie[i] do
+if rvn_bodrstvovanie[i][ii][3]/hh[i]-trunc(rvn_bodrstvovanie[i][ii][3]/hh[i])=0 then
+NN3D[i]:=NN3D[i]+rvn_bodrstvovanie[i][ii][3]/hh[i]:
+else
+NN3D[i]:=NN3D[i]+trunc(rvn_bodrstvovanie[i][ii][3]/hh[i])+1:
+end if:
+end do:
+ii:='ii':
+print(i,NN3D[i]);
+
+end do:
+i:='i':
+
+NN2D_bodrstvovanie:=convert(NN2D,list);
+NN3D_bodrstvovanie:=convert(NN3D,list);
+
+NN2D:='NN2D':
+NN3D:='NN3D':
+                            1, 8731
+                                         5
+                      1, 3.11420000000 10 
+                            2, 10626
+                                         5
+                      2, 3.87629000000 10 
+                            3, 13219
+                                         5
+                      3, 4.86462000000 10 
+                            4, 16773
+                                         5
+                      4, 6.31991000000 10 
+                            5, 22171
+                                         5
+                      5, 8.51795000000 10 
+                            6, 30696
+                                         6
+                      6, 1.21384400000 10 
+NN2D_bodrstvovanie := [8731, 10626, 13219, 16773, 22171, 30696]
+                       [                5                  5  
+ NN3D_bodrstvovanie := [3.11420000000 10 , 3.87629000000 10 , 
+
+                   5                  5                  5  
+   4.86462000000 10 , 6.31991000000 10 , 8.51795000000 10 , 
+
+                   6]
+   1.21384400000 10 ]
+NN:='NN':
+NN:=NN2D_bodrstvovanie:
+
+DD:='DD':
+Gamma:='Gamma':
+i:='i':
+Lambda:=sum((NN[i]-Gamma*(hh[i])^(-DD))^2,i=1..NN_hh):
+i:='i':
+Resh:=fsolve({diff(Lambda,DD)=0,diff(Lambda,Gamma)=0},{DD=0..2,Gamma=1..max(NN)});
+i:='i':
+for i from 1 to nops(Resh) do
+if lhs(Resh[i])=DD then DD:=rhs(Resh[i]): end if:
+if lhs(Resh[i])=Gamma then Gamma:=rhs(Resh[i]): end if:
+end do;
+i:='i':
+DD:=DD;
+Gamma:=Gamma;
+
+i:='i':
+ppp1:=pointplot([seq([hh[i],NN[i]],i=1..NN_hh)]):
+i:='i':
+ppp2:=plot(Gamma*h^(-DD),h=hh[1]..hh[NN_hh]):
+display(ppp1,ppp2);
+
+i:='i':
+_delta:=max(seq(abs(NN[i]-subs(h=hh[i],Gamma*h^(-DD)))/abs(Gamma*(hh[i])^(-DD)),i=1..NN_hh));
+i:='i':
+
+NN:='NN':
+
+print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+NN:='NN':
+NN:=NN3D_bodrstvovanie:
+
+DD:='DD':
+Gamma:='Gamma':
+i:='i':
+Lambda:=sum((NN[i]-Gamma*(hh[i])^(-DD))^2,i=1..NN_hh):
+i:='i':
+Resh:=fsolve({diff(Lambda,DD)=0,diff(Lambda,Gamma)=0},{DD=0..3,Gamma=1..max(NN)});
+i:='i':
+for i from 1 to nops(Resh) do
+if lhs(Resh[i])=DD then DD:=rhs(Resh[i]): end if:
+if lhs(Resh[i])=Gamma then Gamma:=rhs(Resh[i]): end if:
+end do;
+i:='i':
+DD:=DD;
+Gamma:=Gamma;
+
+i:='i':
+ppp1:=pointplot([seq([hh[i],NN[i]],i=1..NN_hh)]):
+i:='i':
+ppp2:=plot(Gamma*h^(-DD),h=hh[1]..hh[NN_hh]):
+display(ppp1,ppp2);
+
+i:='i':
+_delta:=max(seq(abs(NN[i]-subs(h=hh[i],Gamma*h^(-DD)))/abs(Gamma*(hh[i])^(-DD)),i=1..NN_hh));
+i:='i':
+
+NN:='NN':
+
+NN2D:='NN2D':
+NN3D:='NN3D':
+      Resh := {DD = 1.80306336439, Gamma = 8806.93198937}
+                      DD := 1.80306336439
+                     Gamma := 8806.93198937
+
+                   _delta := 0.00862184350483
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+  ++++++"
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+  ++++++"
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+  ++++++"
+            /                                            5\ 
+   Resh := { DD = 1.94825727794, Gamma = 3.14720042596 10  }
+            \                                             / 
+                      DD := 1.94825727794
+                                            5
+                   Gamma := 3.14720042596 10 
+
+                   _delta := 0.0104856448569
+
+                                          
+                                          Выбираем значение h для которого проводим дальнейшие вычисления (по умолчанию h=hh[i]=1) 
+                                          
+i:='i': ii:='ii':
+for i from 1 to NN_hh do
+
+if hh[i]=1
+
+then
+
+ii:=i:
+
+end if:
+
+end do:
+i:='i':
+ii:=ii;
+h=hh[ii];
+                            ii := 1
+                             h = 1.
+
+                                Общий случай.
+rvn:='rvn':
+rvn:=rvn_full[ii]:
+
+                                Вычисляем v_rrh и v_nrrh
+                                
+v_rrh:='v_rrh':
+v_nrrh:='v_nrrh':
+
+NNN:='NNN':
+NNNNN:='NNNNN':
+NNN:=nops(rvn):
+i:='i': NNNNN:=sum(rvn[i][3],i=1..NNN): i:='i':
+v_rrh:=0:
+v_nrrh:=0:
+i:='i':
+for i from 1 to NNN do
+ if abs(rvn[i][2])<=15 then
+  v_rrh:=v_rrh+rvn[i][3]*abs(rvn[i][2])/NNNNN:
+ else
+  v_nrrh:=v_nrrh+rvn[i][3]*abs(rvn[i][2])/NNNNN:
+ end if:
+end do:
+i:='i':
+NNN:='NNN':
+NNNNN:='NNNNN':
+
+v_rrh:=evalf(v_rrh);
+v_nrrh:=evalf(v_nrrh);
+                     v_rrh := 2.02538196502
+                    v_nrrh := 11.2163646083
+
+                                    Сон
+rvn:='rvn':
+rvn:=rvn_son[ii]:
+            
+                                  Вычисляем v_rrh и v_nrrh
+                                          
+v_rrh:='v_rrh':
+v_nrrh:='v_nrrh':
+
+NNN:='NNN':
+NNNNN:='NNNNN':
+NNN:=nops(rvn):
+i:='i': NNNNN:=sum(rvn[i][3],i=1..NNN): i:='i':
+v_rrh:=0:
+v_nrrh:=0:
+i:='i':
+for i from 1 to NNN do
+ if abs(rvn[i][2])<=15 then
+  v_rrh:=v_rrh+rvn[i][3]*abs(rvn[i][2])/NNNNN:
+ else
+  v_nrrh:=v_nrrh+rvn[i][3]*abs(rvn[i][2])/NNNNN:
+ end if:
+end do:
+i:='i':
+NNN:='NNN':
+NNNNN:='NNNNN':
+
+v_rrh:=evalf(v_rrh);
+v_nrrh:=evalf(v_nrrh);
+                     v_rrh := 1.58837356893
+                    v_nrrh := 6.50968477450
+
+                                          Бодрствование
+                                          
+rvn:='rvn':
+rvn:=rvn_bodrstvovanie[ii]:
+                
+                                            Вычисляем v_rrh и v_nrrh
+                                            
+                                            v_rrh:='v_rrh':
+v_nrrh:='v_nrrh':
+
+NNN:='NNN':
+NNNNN:='NNNNN':
+NNN:=nops(rvn):
+i:='i': NNNNN:=sum(rvn[i][3],i=1..NNN): i:='i':
+v_rrh:=0:
+v_nrrh:=0:
+i:='i':
+for i from 1 to NNN do
+ if abs(rvn[i][2])<=15 then
+  v_rrh:=v_rrh+rvn[i][3]*abs(rvn[i][2])/NNNNN:
+ else
+  v_nrrh:=v_nrrh+rvn[i][3]*abs(rvn[i][2])/NNNNN:
+ end if:
+end do:
+i:='i':
+NNN:='NNN':
+NNNNN:='NNNNN':
+
+v_rrh:=evalf(v_rrh);
+v_nrrh:=evalf(v_nrrh);
+                     v_rrh := 2.14477554435
+                    v_nrrh := 12.5022606100
+
+                                          
+                                          
+                                          
