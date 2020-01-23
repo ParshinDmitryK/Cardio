@@ -23,11 +23,6 @@ int numboccur(double *ppp, double *pppUnique, int k)
 	return amountRep;
 }
 
-int rememverVariable(int)
-{
-
-}
-
 double sign(double number)
 {
 	if (number < 0) {
@@ -215,6 +210,7 @@ void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn пер
 		rvn : = [op(rvn), [ppp_unique[i][1] / B, ppp_unique[i][2] / B, n[i]]] :
 		end do :
 		*/
+
 		for (i = 0; i < sizeof(pppUnique); i++) {
 			n[i] = numboccur(ppp, pppUnique, i);	//заполняем массив цифрами - количество повторений pppUnique в ppp
 
@@ -231,23 +227,22 @@ int main()
 	double y[100];
 	double v[100];
 	double yy[100];
-	double rowdim[100]; //N1 - strings
-	double coldim[100]; //N2 - colons
+	double rowdim[100];				//N1 - strings
+	double coldim[100];				//N2 - colons
 	double somethingImportant;		//incorrect name
-	double tSleep[100]; //T_sna
+	double tSleep[100];				//T_sna
 	int n = sizeof(rowdim)-1;
-	int nInitial = 0; //N_nach
-	int nFinal = n; //N_konech
+	int nInitial = 0;				//N_nach
+	int nFinal = n;					//N_konech
 	int j = 0;
 	int i = 0;
 	int k = 0;
 	double max = 0;
-	double a = 13; //hours of day
-	double b = 8; //hours of night
+	double a = 13;					//hours of day
+	double b = 8;					//hours of night
 	int gapSleep[2];
 	gapSleep[0] = (int)(a * 3600);
 	gapSleep[1] = (int)(gapSleep[0] + b * 3600);
-
 
 	if (sizeof(coldim)) {
 		t[0] = 0;
