@@ -9,9 +9,16 @@
 using namespace std;
 
 //создаём функцию numboccur, которая ищет количество повторений ppp_unique[i] в ppp
-int numboccur(double *ppp, double *pppUnique, int *i)
+int numboccur(double *ppp, double *pppUnique, int k)
 {
 	int amountRep = 0; //количество повторений. Rep - replay(повтор)
+	for (int i = 0; i < sizeof(pppUnique); i++){
+		for (int j = 0; j < sizeof(pppUnique); j++){
+			if (ppp[i] == pppUnique[j]){
+				amountRep++;
+			}
+		}
+	}
 
 	return amountRep;
 }
@@ -71,27 +78,27 @@ void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn пер
 	int iCopy, sCopy, jCopy;
 
 
-	// копипастим
+	// копипастим чтобы запомнить
 
-			for (int i = 0; i < sizeof(rvn); i++) {
-				rvnCopy[i] = rvn[i];
-			}
-			for (int i = 0; i < sizeof(y); i++) {
-				yCopy[i] = y[i];
-			}
-			for (int i = 0; i < sizeof(v); i++) {
-				vCopy[i] = v[i];
-			}
-			for (int i = 0; i < sizeof(lam); i++) {
-				lamCopy[i] = lam[i];
-			}
-			for (int i = 0; i < sizeof(n); i++) {
-				nCopy[i] = n[i];
-			}
+	for (int i = 0; i < sizeof(rvn); i++) {
+		rvnCopy[i] = rvn[i];
+	}
+	for (int i = 0; i < sizeof(y); i++) {
+		yCopy[i] = y[i];
+	}
+	for (int i = 0; i < sizeof(v); i++) {
+		vCopy[i] = v[i];
+	}
+	for (int i = 0; i < sizeof(lam); i++) {
+		lamCopy[i] = lam[i];
+	}
+	for (int i = 0; i < sizeof(n); i++) {
+		nCopy[i] = n[i];
+	}
 
-			iCopy = i;
-			sCopy = s;
-			jCopy = j;
+	iCopy = i;
+	sCopy = s;
+	jCopy = j;
 
 	//закончили копипаст
 
@@ -114,12 +121,12 @@ void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn пер
 				for (s = 0; s < lam[i] - 1; i++) {
 					if (aaa > bbb) {
 						ii++;
-						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);	
+						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
 						ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
 					}
 					if (aaa <= bbb) {
 						ii++;
-						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);	
+						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
 						ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
 					}
 				}
@@ -209,11 +216,10 @@ void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn пер
 		end do :
 		*/
 		for (i = 0; i < sizeof(pppUnique); i++) {
-			n[i] = numboccur(ppp, pppUnique, i);
-			rvn[0] = ;
-			rvn[1] = ;
-			rvn[2] = ;
-			rvn[3] = ;
+			n[i] = numboccur(ppp, pppUnique, i);	//заполняем массив цифрами - количество повторений pppUnique в ppp
+
+			// Ещё раз что такое rvn, зачем он и что в себе хранит, как его заполнять в данной части кода?
+
 		}
 	}
 }
@@ -229,7 +235,7 @@ int main()
 	double coldim[100]; //N2 - colons
 	double somethingImportant;		//incorrect name
 	double tSleep[100]; //T_sna
-	int n = sizeof(rowdim) - 1;
+	int n = sizeof(rowdim)-1;
 	int nInitial = 0; //N_nach
 	int nFinal = n; //N_konech
 	int j = 0;
@@ -274,7 +280,7 @@ int main()
 		}
 		n = j - 1;
 	}
-	n = sizeof(rowdim) - 1;
+	n = sizeof(rowdim)-1;
 	/*
 	yt:=[seq([t[i],y[i]],i=0..N)]:
 	t[0]:=t[0];
