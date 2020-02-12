@@ -1,298 +1,231 @@
-// Cardio.cpp: определяет точку входа для консольного приложения.
-//
+restart;Digits:=12:
+with(plots):
+with(plottools):
+with(CurveFitting):
+with(ExcelTools):
+with(linalg):
+with(ColorTools):
+A := Import("D:\\60 Êîìàðîâà ÇÈ ñòèìóëÿòîð.xlsx");
 
-#include "stdafx.h"
-#include "iostream"
-#include "math.h"
-#include <stdlib.h>
-#include <stdio.h>
-using namespace std;
+N1:=rowdim(convert(A,array));
+N2:=coldim(convert(A,array));
+           AAssignMatrix(%id = 18446745583738700078)
+                          N1 := 100304
+                            N2 := 1
+N:=N1-1; N_nach:=0; N_konech:=N;
 
-//создаём функцию numboccur, которая ищет количество повторений ppp_unique[i] в ppp
-int numboccur(double *ppp, double *pppUnique, int k)
-{
-	int amountRep = 0; //количество повторений. Rep - replay(повтор)
-	for (int i = 0; i < sizeof(pppUnique); i++){
-		for (int j = 0; j < sizeof(pppUnique); j++){
-			if (ppp[i] == pppUnique[j]){
-				amountRep++;
-			}
-		}
-	}
+T_promegutki_sna:=[
+[12.5*3600,12.5*3600+8*3600]
+];
 
-	return amountRep;
-}
+#N_nach:=0; N:=1000; N_konech:=N_nach+N;
+                          N := 100303
+                          N_nach := 0
+                       N_konech := 100303
+            T_promegutki_sna := [[45000.0, 73800.0]]
+if N2=1 then
 
-double sign(double number)
-{
-	if (number < 0) {
-		number = -1;
-	}
-	else {
-		number = 1;
-	}
-	return number;
-}
+i:='i':
+t[0]:=0:
+for i from 1 to N_nach+1 do
+t[0]:=t[0]+A[i,1]/1000:
+end do:
+i:='i':
+i:='i':
+y[0]:=60/(A[N_nach+1,1]/1000):
+for i from N_nach+1 to N_konech do
+t[i-N_nach]:=t[i-N_nach-1]+A[i+1,1]/1000:
+y[i-N_nach]:=60/(A[i+1,1]/1000):
+end do:
+i:='i':
 
-double heaviside(double number)
-{
-	if (number < 0) {
-		number = 0;
-	}
-	else {
-		number = 1;
-	}
-	return number;
-}
+else
 
-/*
-создаём процедуру
+i:='i':
+for i from N_nach to N_konech do
+t[i-N_nach]:=A[i+1,1]:
+y[i-N_nach]:=A[i+1,2]:
+end do:
+i:='i':
+
+end if:
+
+i:='i':
+j:='j':
+while max(seq(abs((y[i+1]-y[i])/(t[i+1]-t[i])),i=0..N-1))>=100 do
+i:='i':
+j:=0:
+for i from 0 to N-1 do
+  if (abs(y[i])<200) and (abs((y[i+1]-y[i])/(t[i+1]-t[i]))<100) then
+    t[j]:=t[i]:
+    y[j]:=y[i]:
+    j:=j+1:
+  end if:
+end do:
+N:=j-1;
+i:='i':
+j:='j':
+end do:
+N:=N;
+i:='i':
+j:='j':
+
+i:='i':
+yt:=[seq([t[i],y[i]],i=0..N)]:
+i:='i':
+
+t[0]:=t[0];
+t[N]:=t[N];
+
+i:='i':
+j:='j':
+ii:=0:
+for j from 1 to nops(T_promegutki_sna) do
+for i from 0 to N do
+ if t[i]>=T_promegutki_sna[j][1] and t[i]<=T_promegutki_sna[j][2] then
+  ii:=ii+1:
+  T_sna[ii]:=t[i]:
+ end if:
+end do:
+end do:
+ii:='ii':
+i:='i':
+j:='j':
+T_sna:=convert(T_sna,list):
+                          N := 100203
+                     t[0] := 0.668000000000
+                   t[100203] := 80300.7400000
+#i:='i':
+#for i from 1 to N do
+#dif_y_t[i]:=(y[i]-y[i-1])/(t[i]-t[i-1]):
+#end do:
+#i:='i':
+
+#i:='i':
+#dif_y_tt:=[seq([t[i],abs(dif_y_t[i])],i=1..N)]:
+#i:='i':
+
+#ppp1:=plot(dif_y_tt,color=red,style=point,symbol=point):
+#ppp11:=plot(dif_y_tt,color=red):
+#display({ppp1,ppp11});
+#ppp1:=plot(yt,color=red,style=point,symbol=point):
+#ppp11:=plot(yt,color=red):
+#display({ppp1,ppp11});
+i:='i':
+for i from 0 to N do
+yy[i]:=y[i]:
+end do:
+i:='i':
+
 NNN_faz:=proc(B,NN,truefalse) local i, ii, y, v, ppp, lambda, s, j, n, ppp_unique, rvn; global t, yy, N;
-*/
 
-void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn передаём значение int n = sizeof(rowdim) - 1;
-{
-	double rvn[100];		//размер полупроизвольный (сколько получится, но зависит от параметров)
-	double y[100];
-	double v[100];
-	double lam[100];	//lambda
-	double ppp[100];		// массив из троек элементов (пара элементов и количество его повторений)
-	double pppUnique[100];
-	double n[100];		//массив количеств повторений
-	int ii, i, s, j;
-	int iiStart, iStart, sStart, jStart;
-	double aaa = abs(y[i + 1] - y[i]);
-	double bbb = abs(v[i + 1] - v[i]);
+NumericEventHandler(invalid_operation = `Heaviside/EventHandler`(value_at_zero = 0)):
 
-	//создаём повторки чтобы потом вернуть начальные значения
-	double rvnCopy[sizeof(rvn)];
-	double yCopy[sizeof(y)];
-	double vCopy[sizeof(v)];
-	double lamCopy[sizeof(lam)];
-	double nCopy[sizeof(n)];
-	int iCopy, sCopy, jCopy;
+#NN:=N;
 
+#+++++++++++++++++++++++++++++++++++++++
 
-	// копипастим чтобы запомнить
+if truefalse<>true and truefalse<>false then
 
-	for (int i = 0; i < sizeof(rvn); i++) {
-		rvnCopy[i] = rvn[i];
-	}
-	for (int i = 0; i < sizeof(y); i++) {
-		yCopy[i] = y[i];
-	}
-	for (int i = 0; i < sizeof(v); i++) {
-		vCopy[i] = v[i];
-	}
-	for (int i = 0; i < sizeof(lam); i++) {
-		lamCopy[i] = lam[i];
-	}
-	for (int i = 0; i < sizeof(n); i++) {
-		nCopy[i] = n[i];
-	}
+ ii:=0:
+ i:='i': s:='s':
+ for i from 0 to NN-2 do
 
-	iCopy = i;
-	sCopy = s;
-	jCopy = j;
+  y[i]:=round(B*yy[i]): y[i+1]:=round(B*yy[i+1]):
+  v[i]:=round(B*(yy[i+1]-yy[i])/(t[i+1]-t[i])): v[i+1]:=round(B*(yy[i+2]-yy[i+1])/(t[i+2]-t[i+1])):
 
-	//закончили копипаст
+  lambda[i]:=max(abs(y[i+1]-y[i]),abs(v[i+1]-v[i])):
+  if lambda[i]<>0 then
 
+  for s from 0 to lambda[i]-1 do
 
-	if (truefalse != true && truefalse != false) {
-		ii = -1;
-		s = 0;
-		for (i = 0; i < nn - 2; i++) {
-			y[i] = round(b*yy[i]);
-			y[i + 1] = (b*yy[i + 1]);
-			v[i] = round((b*(yy[i + 1] - yy[i])) / ((t[i + 1] - t[i])));
-			v[i + 1] = round(b*(yy[i + 2] - yy[i + 1]) / (t[i + 2] - t[i + 1]));
-			if (aaa > bbb) {	//lam[i] = max(aaa, bbb);
-				lam[i] = aaa;
-			}
-			else {
-				lam[i] = bbb;
-			}
-			if (lam[i] != 0) {
-				for (s = 0; s < lam[i] - 1; i++) {
-					if (aaa > bbb) {
-						ii++;
-						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
-						ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
-					}
-					if (aaa <= bbb) {
-						ii++;
-						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
-						ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
-					}
-				}
+  if abs(y[i+1]-y[i])>abs(v[i+1]-v[i]) then
+  ii:=ii+1:
+  ppp[ii]:=[y[i]+sign(y[i+1]-y[i])*s-Heaviside(y[i]-y[i+1]),v[i]+trunc((v[i+1]-v[i])*s/lambda[i])-Heaviside(v[i]-v[i+1])]:
+  end if:
 
-			}
-			else {
-				ii++;
-				ppp[0] = y[i];
-				ppp[1] = v[i];
-			}
+  if abs(y[i+1]-y[i])<=abs(v[i+1]-v[i]) then
+  ii:=ii+1:
+  ppp[ii]:=[y[i]+trunc((y[i+1]-y[i])*s/lambda[i])-Heaviside(y[i]-y[i+1]),v[i]+sign(v[i+1]-v[i])*s-Heaviside(v[i]-v[i+1])]:
+  end if:
 
-			//возвращаем начальное значение
-			for (int i = 0; i < sizeof(y); i++) {
-				y[i] = yCopy[i];
-			}
-			for (int i = 0; i < sizeof(v); i++) {
-				v[i] = vCopy[i];
-			}
-			for (int i = 0; i < sizeof(lam); i++) {
-				lam[i] = lamCopy[i];
-			}
+  end do;
 
-		}
+  else
 
-		i = iCopy;	//возвращаем начальное значение
-		s = sCopy;	//возвращаем начальное значение
-	}
-	else {
-		ii = 0;
-		for (i = 0; i < nn - 2; i++) {
-			if (has[T_sna, t[i]] == truefalse) {		// if has(T_sna,t[i])=truefalse then???
-				y[i] = round(b*yy[i]);
-				y[i + 1] = round(b*yy[i + 1]);
-				v[i] = round(b*(yy[i + 1] - yy[i]) / (t[i + 1] - t[i]));
-				v[i + 1] = round(b*(yy[i + 2] - yy[i + 1]) / (t[i + 2] - t[i + 1]));
-				if (aaa > bbb) {	//lam[i] = max(aaa, bbb);
-					lam[i] = aaa;
-				}
-				else {
-					lam[i] = bbb;
-				}
-				if (lam[i] != 0) {
-					for (s = 0; s < lam[i] - 1; i++) {
-						if (aaa > bbb) {
-							ii++;
-							ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
-							ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
-						}
-						if (aaa <= bbb) {
-							ii++;
-							ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
-							ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
-						}
-					}
+  ii:=ii+1:
+  ppp[ii]:=[y[i],v[i]]:
 
-				}
-				else {
-					ii++;
-					ppp[0] = y[i];
-					ppp[1] = v[i];
-				}
-				//возвращаем начальное значение
-				for (int i = 0; i < sizeof(y); i++) {
-					y[i] = yCopy[i];
-				}
-				for (int i = 0; i < sizeof(v); i++) {
-					v[i] = vCopy[i];
-				}
-				for (int i = 0; i < sizeof(lam); i++) {
-					lam[i] = lamCopy[i];
-				}
-			}
-			s = sCopy;
-			j = jCopy;
-			for (int i = 0; i < sizeof(n); i++) {
-				n[i] = nCopy[i];
-			}
-			for (int i = 0; i < sizeof(rvn); i++) {
-				rvn[i] = rvnCopy[i];
-			}
-		}
+  end if:
+  y:='y': v:='v': lambda:='lambda':
 
-		/* Что здесь происходит
-		for i from 1 to nops(ppp_unique) do
-		n[i]: = numboccur(ppp, [ppp_unique[i]]) :
-		rvn : = [op(rvn), [ppp_unique[i][1] / B, ppp_unique[i][2] / B, n[i]]] :
-		end do :
-		*/
+ end do;
+ i:='i': s:='s':
 
-		for (i = 0; i < sizeof(pppUnique); i++) {
-			n[i] = numboccur(ppp, pppUnique, i);	//заполняем массив цифрами - количество повторений pppUnique в ppp
+else
 
-			// Ещё раз что такое rvn, зачем он и что в себе хранит, как его заполнять в данной части кода?
+#+++++++++++++++++++++++++++++++++++++++
 
-		}
-	}
-}
+ ii:=0:
+ i:='i': s:='s':
+ for i from 0 to NN-2 do
 
+ if has(T_sna,t[i])=truefalse then
 
-int main()
-{
-	double t[100];
-	double y[100];
-	double v[100];
-	double yy[100];
-	double rowdim[100];				//N1 - strings
-	double coldim[100];				//N2 - colons
-	double somethingImportant;		//incorrect name
-	double tSleep[100];				//T_sna
-	int n = sizeof(rowdim)-1;
-	int nInitial = 0;				//N_nach
-	int nFinal = n;					//N_konech
-	int j = 0;
-	int i = 0;
-	int k = 0;
-	double max = 0;
-	double a = 13;					//hours of day
-	double b = 8;					//hours of night
-	int gapSleep[2];
-	gapSleep[0] = (int)(a * 3600);
-	gapSleep[1] = (int)(gapSleep[0] + b * 3600);
+  y[i]:=round(B*yy[i]): y[i+1]:=round(B*yy[i+1]):
+  v[i]:=round(B*(yy[i+1]-yy[i])/(t[i+1]-t[i])): v[i+1]:=round(B*(yy[i+2]-yy[i+1])/(t[i+2]-t[i+1])):
 
-	if (sizeof(coldim)) {
-		t[0] = 0;
-		for (i = 0; i < nInitial + 1; i++) {
-			t[0] = t[0] + rowdim[i] / 1000;
-		}
-		y[0] = 60 / rowdim[nInitial + 1] / 1000;
-		for (i = nInitial + 1; i < nFinal; i++) {
-			t[i - nInitial] = t[i - nInitial - 1] + rowdim[i + 1] / 1000;
-			y[i - nInitial] = 60 / (rowdim[i + 1] / 1000);
-		}
-	}
-	else {
-		for (int i = nInitial; i < nFinal; i++) {
-			t[i - nInitial] = rowdim[i + 1];
-			y[i - nInitial] = coldim[i + 1];
-		}
-	}
-	for (i = 0; i < n - 1; i++) {
-		somethingImportant = abs((y[i + 1] - y[i]) / (t[i + 1] - t[i]));
-		if (somethingImportant > max) max = somethingImportant;
-	}
-	while (max >= 100) {
-		for (i = 0; i < n - 1; i++) {
-			if (abs(y[i]) < 200 && somethingImportant < 100) {
-				t[j] = t[i];
-				y[j] = y[i];
-				j++;
-			}
-		}
-		n = j - 1;
-	}
-	n = sizeof(rowdim)-1;
-	/*
-	yt:=[seq([t[i],y[i]],i=0..N)]:
-	t[0]:=t[0];
-	t[N]:=t[N];
-	*/
-	for (j = 1; j < sizeof(gapSleep); i++) { //nops(gapSleep) from Maple
-		for (i = 0; i < n; i++) {
-			if (t[i] >= gapSleep[0] && t[i] <= gapSleep[1]) {
-				k++;
-				tSleep[k] = t[i];
-			}
-		}
-	}
-	for (i = 0; i < n; i++) {
-		yy[i] = y[i];
-	}
+  lambda[i]:=max(abs(y[i+1]-y[i]),abs(v[i+1]-v[i])):
+  if lambda[i]<>0 then
 
+  for s from 0 to lambda[i]-1 do
 
-	return 0;
-}
+  if abs(y[i+1]-y[i])>abs(v[i+1]-v[i]) then
+  ii:=ii+1:
+  ppp[ii]:=[y[i]+sign(y[i+1]-y[i])*s-Heaviside(y[i]-y[i+1]),v[i]+trunc((v[i+1]-v[i])*s/lambda[i])-Heaviside(v[i]-v[i+1])]:
+  end if:
+
+  if abs(y[i+1]-y[i])<=abs(v[i+1]-v[i]) then
+  ii:=ii+1:
+  ppp[ii]:=[y[i]+trunc((y[i+1]-y[i])*s/lambda[i])-Heaviside(y[i]-y[i+1]),v[i]+sign(v[i+1]-v[i])*s-Heaviside(v[i]-v[i+1])]:
+  end if:
+
+  end do;
+
+  else
+
+  ii:=ii+1:
+  ppp[ii]:=[y[i],v[i]]:
+
+  end if:
+  y:='y': v:='v': lambda:='lambda':
+
+ end if:
+
+ end do;
+ i:='i': s:='s':
+
+end if:
+
+#+++++++++++++++++++++++++++++++++++++++
+
+ppp:=convert(ppp,list):
+ppp_unique:=convert(convert(ppp,set),list):
+
+i:='i':
+j:='j':
+n:='n':
+rvn:=[]:
+for i from 1 to nops(ppp_unique) do
+ n[i]:=numboccur(ppp,[ppp_unique[i]]):
+ rvn:=[op(rvn),[ppp_unique[i][1]/B,ppp_unique[i][2]/B,n[i]]]:
+end do:
+i:='i':
+j:='j':
+n:='n':
+
+rvn;
+
+end proc:
+#NNN_faz(1,10,0);
+
