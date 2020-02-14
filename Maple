@@ -220,6 +220,19 @@ n:='n':
 rvn;
 
 end proc:
+
+
+
+
+
+
+
+
+
+
+
+
+
 #NNN_faz(1,10,0);
 
 Color:=[gray,
