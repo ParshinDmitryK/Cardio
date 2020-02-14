@@ -8,6 +8,18 @@
 #include <stdio.h>
 using namespace std;
 
+//numboccur ищет количество повторений элемента массива ppp_unique[i] в массиве ppp
+int numboccur(double *pppUnique, double *ppp)
+{
+int amount;
+	for (int i = 0; i < pppUnique->sizeof();i++){
+	
+	}
+	
+
+return amount;
+}
+
 //функция аналогичная Heaviside из Maple
 
 double sign(double number)
@@ -68,12 +80,12 @@ void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn пер
 				for (s = 0; s < lam[i] - 1; i++) {
 					if (aaa > bbb) {
 						ii++;
-						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);	//sign???
+						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
 						ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
 					}
 					if (aaa <= bbb) {
 						ii++;
-						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);	//sign???
+						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
 						ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
 					}
 				}
@@ -109,12 +121,12 @@ void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn пер
 					for (s = 0; s < lam[i] - 1; i++) {
 						if (aaa > bbb) {
 							ii++;
-							ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);	//sign???
+							ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
 							ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
 						}
 						if (aaa <= bbb) {
 							ii++;
-							ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);	//sign???
+							ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
 							ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
 						}
 					}
@@ -125,11 +137,11 @@ void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn пер
 					ppp[0] = y[i];
 					ppp[1] = v[i];
 				}
-				y[i] = 0;	//обнуляем переменные (возвращаем начальное значение или приравниваем к нулю?)
-				v[i] = 0;	//обнуляем переменные (возвращаем начальное значение или приравниваем к нулю?)
-				lam[i] = 0;	//обнуляем переменные (возвращаем начальное значение или приравниваем к нулю?)
+				y[i] = 0;	//обнуляем переменные (возвращаем начальное значение)
+				v[i] = 0;	//обнуляем переменные (возвращаем начальное значение)
+				lam[i] = 0;	//обнуляем переменные (возвращаем начальное значение)
 			}
-			s = 0;	//обнуляем переменные (возвращаем начальное значение или приравниваем к нулю?)
+			s = 0;	//обнуляем переменные (возвращаем начальное значение)
 			j = 0;
 			n[i] = 0;
 			rvn[i] = 0;
