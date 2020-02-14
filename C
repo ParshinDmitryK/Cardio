@@ -9,15 +9,17 @@
 using namespace std;
 
 //numboccur ищет количество повторений элемента массива ppp_unique[i] в массиве ppp
-int numboccur(double *pppUnique, double *ppp)
+//numboccur(pppUnique[i], ppp);
+int numboccur(double readPPPU, double *ppp)
 {
-int amount;
-	for (int i = 0; i < pppUnique->sizeof();i++){
-	
+	int amount;
+	amount = 0;
+	for (int i = 0; i < sizeof(ppp); i++) {
+			if (readPPPU == ppp[i]) {
+				amount++;
+		}
 	}
-	
-
-return amount;
+	return amount;
 }
 
 //функция аналогичная Heaviside из Maple
@@ -55,7 +57,7 @@ void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn пер
 	double y[100];
 	double v[100];
 	double lam[100];	//lambda
-	double ppp[2];
+	double ppp[100];
 	double pppUnique[100];
 	double n[2];
 	int ii, i, s, j;
@@ -154,7 +156,7 @@ void faz(double *yy, double *t, int nn, double b, bool truefalse)	//в nn пер
 		end do :
 		*/
 		for (i = 0; i < sizeof(pppUnique); i++) {
-			n[0] = numboccur(ppp);
+			n[i] = numboccur(pppUnique[i], ppp);
 			n[1] = numboccur(pppUnique[i]);
 			rvn[0] = ;
 			rvn[1] = ;
@@ -175,7 +177,7 @@ int main()
 	double coldim[100]; //N2 - colons
 	double somethingImportant;		//incorrect name
 	double tSleep[100]; //T_sna
-	int n = sizeof(rowdim)-1;
+	int n = sizeof(rowdim) - 1;
 	int nInitial = 0; //N_nach
 	int nFinal = n; //N_konech
 	int j = 0;
@@ -220,7 +222,7 @@ int main()
 		}
 		n = j - 1;
 	}
-	n = sizeof(rowdim)-1;
+	n = sizeof(rowdim) - 1;
 	/*
 	yt:=[seq([t[i],y[i]],i=0..N)]:
 	t[0]:=t[0];
