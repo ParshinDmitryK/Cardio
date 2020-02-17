@@ -6,7 +6,60 @@
 #include "math.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <fstream>
+#include <string>
 using namespace std;
+
+
+string folder_input = "C://Users//Dmitry//Desktop//Cardio//rebuild//Petrova.txt";   //no spaces in folder names!
+string folder_output = "C://Users//Dmitry//Desktop//Cardio//rebuild//output.txt";
+
+int makeMass(int rc, float* mass) //input in file
+{
+	setlocale(LC_ALL, "Russian");
+	ofstream f;
+
+	f.open(folder_output);   //no spaces in folder names!
+	for (int i = 0; i < rc; i++)
+	{
+		f << mass[i] << endl;
+	}
+	return 0;
+}
+
+void takeMass(int rc, float *mass) //output from file
+{
+	setlocale(LC_ALL, "Russian");
+	ifstream f;
+
+	f.open(folder_input);
+	for (int i = 0; i < rc; i++)
+	{
+		f >> mass[i];
+		//cout << "element[" << i << "]:" << MASS_msr[i] << endl;
+	}
+}
+
+int getRowsCount(string st) //возвращает число строк в txt файле
+{
+	char* str = new char[1024];
+	int i = 0;
+	ifstream StrBase(st);
+	while (!StrBase.eof())
+	{
+
+		StrBase.getline(str, 1024, '\n');
+		i++;
+	}
+	StrBase.close();
+	delete str;
+	return i;
+}
+//при сохраненнии файла из экселя через "сохранить как - *.txt" он создает 1 пустую строку в конце. 
+//чтобы этого не было надо в *.txt файле удалить последнюю строку
+
+
+
 
 bool has(double *tSleep, double element) {
 	bool exist;
@@ -65,9 +118,9 @@ double heaviside(double number)
 NNN_faz:=proc(B,NN,truefalse) local i, ii, y, v, ppp, lambda, s, j, n, ppp_unique, rvn; global t, yy, N;
 */
 
-void faz(double *yy, double *t, double *tSleep, int nn, double b, bool truefalse)	//в nn передаём значение int n = sizeof(rowdim) - 1;
+/*
+void faz(double *rvn, double *yy, double *t, double *tSleep, int nn, double b, bool truefalse)	//в nn передаём значение int n = sizeof(rowdim) - 1;
 {
-	double rvn[100][3];
 	double y[100];
 	double v[100];
 	double lam[100];	//lambda
@@ -166,12 +219,12 @@ void faz(double *yy, double *t, double *tSleep, int nn, double b, bool truefalse
 			rvn[i][2] = 0;
 		}
 
-		/* 
+	 
 		rvn : = [op(rvn), [ppp_unique[i][1] / B, ppp_unique[i][2] / B, n[i]]] :
 		ppp - y[i] и v[i]. ppp_unique - все уникальные y[i] и v[i]
 		op делает из rvn список. тройки элементов. массив уникальных элементов и их кратности
 		rvn - сколько получается элементов без повторений. одно вхождение y[i] в v[i]
-		*/
+		
 		for (i = 0; i < sizeof(pppUnique); i++) {
 			nnn[i] = numboccur(pppUnique[i], ppp);
 			rvn[i][0] = y[i];
@@ -180,16 +233,30 @@ void faz(double *yy, double *t, double *tSleep, int nn, double b, bool truefalse
 		}
 	}
 }
+*/
+
+
+
+
+
+
+
+
 
 
 int main()
 {
+	double rvn[100][3];
 	double t[100];
 	double y[100];
 	double v[100];
 	double yy[100];
 	double rowdim[100]; //N1 - strings
 	double coldim[100]; //N2 - colons
+	double lam[100];	//lambda
+	double ppp[100];
+	double pppUnique[100];
+	double nnn[2];
 	double somethingImportant;		//incorrect name
 	double tSleep[100]; //T_sna
 	int n = sizeof(rowdim) - 1;
@@ -198,14 +265,167 @@ int main()
 	int j = 0;
 	int i = 0;
 	int k = 0;
+	int gapSleep[2];
+	int ii, i, s, j;
+	int iiStart, iStart, sStart, jStart;
 	double max = 0;
 	double a = 13; //hours of day
 	double b = 8; //hours of night
-	int gapSleep[2];
+	double pokazRazb; // показатель разбиений
+	double aaa = abs(y[i + 1] - y[i]);
+	double bbb = abs(v[i + 1] - v[i]);
+
+	bool tFU;
+
+
 	gapSleep[0] = (int)(a * 3600);
 	gapSleep[1] = (int)(gapSleep[0] + b * 3600);
+	pokazRazb = 1.6;
 
 
+
+	setlocale(LC_ALL, "Russian");
+
+	int RowsCount = getRowsCount(folder_input);
+	cout << "RowsCount:\n" << RowsCount << endl;
+	float* mass_masr = new float[RowsCount];
+	takeMass(RowsCount, mass_masr);
+	makeMass(RowsCount, mass_masr);
+	cout << "mas:\n" << mass_masr[RowsCount - 1] << endl;
+	system("pause");
+
+
+
+
+	if (tFU != true && tFU != false) {
+		ii = -1;
+		s = 0;
+		for (i = 0; i < n - 2; i++) {
+			y[i] = round(b*yy[i]);
+			y[i + 1] = (b*yy[i + 1]);
+			v[i] = round((b*(yy[i + 1] - yy[i])) / ((t[i + 1] - t[i])));
+			v[i + 1] = round(b*(yy[i + 2] - yy[i + 1]) / (t[i + 2] - t[i + 1]));
+			if (aaa > bbb) {	//lam[i] = max(aaa, bbb);
+				lam[i] = aaa;
+			}
+			else {
+				lam[i] = bbb;
+			}
+			if (lam[i] != 0) {
+				for (s = 0; s < lam[i] - 1; i++) {
+					if (aaa > bbb) {
+						ii++;
+						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
+						ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
+					}
+					if (aaa <= bbb) {
+						ii++;
+						ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
+						ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
+					}
+				}
+
+			}
+			else {
+				ii++;
+				ppp[0] = y[i];
+				ppp[1] = v[i];
+			}
+			y[i] = y[i];	//возвращаем начальное значение
+			v[i] = 0;	//возвращаем начальное значение
+			lam[i] = 0;	//возвращаем начальное значение
+		}
+		i = 0;	//возвращаем начальное значение
+		s = 0;	//возвращаем начальное значение
+	}
+	else {
+		ii = 0;
+		for (i = 0; i < n - 2; i++) {
+			if (has(tSleep, t[i]) == tFU) {
+				// has - содержится ли элемент t[i] в массиве T_sna
+				y[i] = round(b*yy[i]);
+				y[i + 1] = round(b*yy[i + 1]);
+				v[i] = round(b*(yy[i + 1] - yy[i]) / (t[i + 1] - t[i]));
+				v[i + 1] = round(b*(yy[i + 2] - yy[i + 1]) / (t[i + 2] - t[i + 1]));
+				if (aaa > bbb) {	//lam[i] = max(aaa, bbb);
+					lam[i] = aaa;
+				}
+				else {
+					lam[i] = bbb;
+				}
+				if (lam[i] != 0) {
+					for (s = 0; s < lam[i] - 1; i++) {
+						if (aaa > bbb) {
+							ii++;
+							ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
+							ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
+						}
+						if (aaa <= bbb) {
+							ii++;
+							ppp[0] = y[i] + sign(y[i + 1] - y[i])*s - heaviside(y[i] - y[i + 1]);
+							ppp[1] = v[i] + trunc((v[i + 1] - v[i])*s / lam[i]) - heaviside(v[i] - v[i + 1]);
+						}
+					}
+
+				}
+				else {
+					ii++;
+					ppp[0] = y[i];
+					ppp[1] = v[i];
+				}
+				y[i] = 0;	//обнуляем переменные (возвращаем начальное значение)
+				v[i] = 0;	//обнуляем переменные (возвращаем начальное значение)
+				lam[i] = 0;	//обнуляем переменные (возвращаем начальное значение)
+			}
+			s = 0;	//обнуляем переменные (возвращаем начальное значение)
+			j = 0;
+			nnn[i] = 0;
+			rvn[i][0] = 0;
+			rvn[i][1] = 0;
+			rvn[i][2] = 0;
+		}
+
+		/*
+	rvn: = [op(rvn), [ppp_unique[i][1] / B, ppp_unique[i][2] / B, n[i]]] :
+		ppp - y[i] и v[i].ppp_unique - все уникальные y[i] и v[i]
+		op делает из rvn список.тройки элементов.массив уникальных элементов и их кратности
+		rvn - сколько получается элементов без повторений.одно вхождение y[i] в v[i]
+
+		for (i = 0; i < sizeof(pppUnique); i++) {
+			nnn[i] = numboccur(pppUnique[i], ppp);
+			rvn[i][0] = y[i];
+			rvn[i][1] = v[i];
+			rvn[i][2] = nnn[i];
+		}
+		*/
+
+
+
+
+
+
+
+	for (int i = 0; i < sizeof(rvn); i++) {
+		for (int j = 0; j < 3; j++) {
+			rvn[i][0] = y[i];
+			rvn[i][1] = v[i];
+			rvn[i][2] = n;
+		}
+	}
+
+
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			if (has(rvn[i][3], max(seq(rvn[j][3])))) {	//max(seq(rvn[j][3])) - ищет максимальное rvn[j][3]
+
+			}
+		}
+	}
+	
+	
+	
+	
+	
 	if (sizeof(coldim)) {
 		t[0] = 0;
 		for (i = 0; i < nInitial + 1; i++) {
