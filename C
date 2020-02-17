@@ -61,10 +61,12 @@ int getRowsCount(string st) //возвращает число строк в txt 
 
 
 
-bool has(double *tSleep, double element) {
+
+
+bool has(double *array, double element) {
 	bool exist;
-	for (int i = 0; i < sizeof(tSleep); i++) {
-		if (element == tSleep[i]) {
+	for (int i = 0; i < sizeof(array); i++) {
+		if (element == array[i]) {
 			exist = true;
 		}
 		else {
@@ -268,14 +270,21 @@ int main()
 	int gapSleep[2];
 	int ii, i, s, j;
 	int iiStart, iStart, sStart, jStart;
-	double max = 0;
-	double a = 13; //hours of day
-	double b = 8; //hours of night
+	int nColor = 12;
+	double max = 0.0;
+	double a = 13.0; //hours of day
+	double b = 8.0; //hours of night
+	double maxNumber = 0.0;
 	double pokazRazb; // показатель разбиений
-	double aaa = abs(y[i + 1] - y[i]);
-	double bbb = abs(v[i + 1] - v[i]);
-
+	double yMax;
+	double vMax;
+	double nMax;
+	//double aaa = abs(y[i + 1] - y[i]);
+	//double bbb = abs(v[i + 1] - v[i]);
+	double aaa;
+	double bbb;
 	bool tFU;
+	int k;
 
 
 	gapSleep[0] = (int)(a * 3600);
@@ -294,6 +303,9 @@ int main()
 	cout << "mas:\n" << mass_masr[RowsCount - 1] << endl;
 	system("pause");
 
+
+
+	//start proc:
 
 
 
@@ -401,10 +413,10 @@ int main()
 
 
 
+		//end proc:
 
 
-
-
+		//формируется массив rvn
 	for (int i = 0; i < sizeof(rvn); i++) {
 		for (int j = 0; j < 3; j++) {
 			rvn[i][0] = y[i];
@@ -413,67 +425,92 @@ int main()
 		}
 	}
 
+	//ищется максимальное количество повторений
+	for (int i = 0; i < sizeof(rvn); i++) {
+		if (rvn[i][2] > maxNumber) {
+			maxNumber = rvn[i][2];
+		}
+	}
+
 
 	for (int i = 1; i <= n; i++) {
 		for (int j = 1; j <= n; j++) {
-			if (has(rvn[i][3], max(seq(rvn[j][3])))) {	//max(seq(rvn[j][3])) - ищет максимальное rvn[j][3]
+			if (rvn[i][2] == maxNumber) {
+				yMax = rvn[i][0];
+				vMax = rvn[i][1];
+				nMax = rvn[i][2];
+			}
+		}
+	}
+
+	for (int i = 1; i <= nColor; i++) {
+		k = 0;
+		for (int j = 1; j <= n; j++) {
+			aaa = round((pow((i-1),pokazRazb*nMax)) / (pow(nColor, pokazRazb)));	//round((i-1)^Pokazatel_razbieniy*n_max/N_color^Pokazatel_razbieniy)
+			bbb = round((pow(i,pokazRazb*nMax))/(pow(nColor, pokazRazb)));		//round(i^Pokazatel_razbieniy*n_max/N_color^Pokazatel_razbieniy)
+			if ((rvn[j][2] > aaa) && (rvn[j][2] <= bbb)) {
+				k++;
+				//270 строка Maple
 
 			}
+
 		}
+
 	}
-	
-	
-	
-	
-	
-	if (sizeof(coldim)) {
-		t[0] = 0;
-		for (i = 0; i < nInitial + 1; i++) {
-			t[0] = t[0] + rowdim[i] / 1000;
-		}
-		y[0] = 60 / rowdim[nInitial + 1] / 1000;
-		for (i = nInitial + 1; i < nFinal; i++) {
-			t[i - nInitial] = t[i - nInitial - 1] + rowdim[i + 1] / 1000;
-			y[i - nInitial] = 60 / (rowdim[i + 1] / 1000);
-		}
-	}
-	else {
-		for (int i = nInitial; i < nFinal; i++) {
-			t[i - nInitial] = rowdim[i + 1];
-			y[i - nInitial] = coldim[i + 1];
-		}
-	}
-	for (i = 0; i < n - 1; i++) {
-		somethingImportant = abs((y[i + 1] - y[i]) / (t[i + 1] - t[i]));
-		if (somethingImportant > max) max = somethingImportant;
-	}
-	while (max >= 100) {
-		for (i = 0; i < n - 1; i++) {
-			if (abs(y[i]) < 200 && somethingImportant < 100) {
-				t[j] = t[i];
-				y[j] = y[i];
-				j++;
-			}
-		}
-		n = j - 1;
-	}
-	n = sizeof(rowdim) - 1;
-	/*
-	yt:=[seq([t[i],y[i]],i=0..N)]:
-	t[0]:=t[0];
-	t[N]:=t[N];
-	*/
-	for (j = 1; j < sizeof(gapSleep); i++) { //nops(gapSleep) from Maple
-		for (i = 0; i < n; i++) {
-			if (t[i] >= gapSleep[0] && t[i] <= gapSleep[1]) {
-				k++;
-				tSleep[k] = t[i];
-			}
-		}
-	}
-	for (i = 0; i < n; i++) {
-		yy[i] = y[i];
-	}
+
+
+
+
+
+	//я не помню что это, но считаю что удалять это пока что не стоит
+	//if (sizeof(coldim)) {
+	//	t[0] = 0;
+	//	for (i = 0; i < nInitial + 1; i++) {
+	//		t[0] = t[0] + rowdim[i] / 1000;
+	//	}
+	//	y[0] = 60 / rowdim[nInitial + 1] / 1000;
+	//	for (i = nInitial + 1; i < nFinal; i++) {
+	//		t[i - nInitial] = t[i - nInitial - 1] + rowdim[i + 1] / 1000;
+	//		y[i - nInitial] = 60 / (rowdim[i + 1] / 1000);
+	//	}
+	//}
+	//else {
+	//	for (int i = nInitial; i < nFinal; i++) {
+	//		t[i - nInitial] = rowdim[i + 1];
+	//		y[i - nInitial] = coldim[i + 1];
+	//	}
+	//}
+	//for (i = 0; i < n - 1; i++) {
+	//	somethingImportant = abs((y[i + 1] - y[i]) / (t[i + 1] - t[i]));
+	//	if (somethingImportant > max) max = somethingImportant;
+	//}
+	//while (max >= 100) {
+	//	for (i = 0; i < n - 1; i++) {
+	//		if (abs(y[i]) < 200 && somethingImportant < 100) {
+	//			t[j] = t[i];
+	//			y[j] = y[i];
+	//			j++;
+	//		}
+	//	}
+	//	n = j - 1;
+	//}
+	//n = sizeof(rowdim) - 1;
+	///*
+	//yt:=[seq([t[i],y[i]],i=0..N)]:
+	//t[0]:=t[0];
+	//t[N]:=t[N];
+	//*/
+	//for (j = 1; j < sizeof(gapSleep); i++) { //nops(gapSleep) from Maple
+	//	for (i = 0; i < n; i++) {
+	//		if (t[i] >= gapSleep[0] && t[i] <= gapSleep[1]) {
+	//			k++;
+	//			tSleep[k] = t[i];
+	//		}
+	//	}
+	//}
+	//for (i = 0; i < n; i++) {
+	//	yy[i] = y[i];
+	//}
 
 
 	return 0;
